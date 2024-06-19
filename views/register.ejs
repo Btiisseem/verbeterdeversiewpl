@@ -1,0 +1,39 @@
+<%- include('./partials/head') %>
+
+  <body>
+    <section class="container">
+      <img src="/assets/images/LogoMuskNite.png" alt="Magic the Gathering" />
+
+      <form class="registration" action="/register" method="post" id="register-form">
+        <!--TITEL-->
+        <h1>Registratie</h1>
+        <!--input van email-->
+        <label for="email">Emailadres</label>
+        <input type="email" id="email" name="email" required />
+        <!--input van password-->
+        <label for="password">Kies een wachtwoord</label>
+        <input type="password" id="password" name="password"  required /><br>
+
+        <!--input van herhaal password-->
+        <label for="passwordConfirm">Herhaal wachtwoord</label>
+        <input type="password" id="passwordConfirm" name="passwordConfirm" required />
+
+        <!--knop van submitten-->
+        <button type="submit">Registratie bevestigen</button>
+      </form>
+  
+      <% if (error_message !== "") { %>
+        <div class="error-message"><%= error_message %>  </div>
+    <% } %>
+    
+      <!--link naar login pagina-->      
+      <section class="login-link">
+        <p>
+          Heb je al een account? <br> <a href="/login">Meld je dan hier aan!</a>
+        </p>
+      </section>
+
+
+    </section>
+  </body>
+  <%- include('./partials/footer') %>

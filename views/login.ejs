@@ -1,0 +1,70 @@
+<%- include('./partials/header') %>
+
+<body>
+  <section>
+    <div style="text-align: center; background-color: black; border: purple 4px solid;" class="text-info-decklist">
+      <p class="info-totaldeck">Op deze pagina zie je de kaarten met hun randen, die hun zeldzaamheid aangeven als volgt:
+        <br>- Common: witte rand
+        <br>- Uncommon: blauwe rand
+        <br>- Rare: gele rand
+        <br>- Mythic: rode rand
+      </p>
+    </div>
+  </section>
+
+  <div class="search-box">
+    <button id="info-toggle-btn" class="btn-main-info">&quest;</button>
+    <form action="/main" method="get">
+      <input type="text" id="search" name="searchedCards" placeholder="Zoek een kaart...">
+      <button type="submit" class="search-button">Zoek</button>
+    </form>
+  </div>
+
+  <main style="height: 100%;">
+    <div class="image-gallery">
+      <% for( card of cards ) { %>
+        <article class="card <%= getRarityClass(card.rarity) %>">
+          <a href="/cardinfo?name=<%= card.name %>">
+            <img class="image" src="<%= card.imageUrl %>" alt="<%= card.name %>" />
+          </a>
+        </article>
+      <% } %>
+    </div>
+
+    <section class="pagination">
+      <% if (currentPage > 1) { %>
+        <a href="/main?p=<%= currentPage - 1 %>&searchedCards=<%= searchedCards %>">&larr;</a>
+      <% } %>
+
+      <% if (currentPage > 3) { %>
+        <span style="color: white;">...</span>
+      <% } %>
+
+      <% for (let i = currentPage - 2; i <= currentPage + 2; i++) { %>
+        <% if (i > 0 && i <= totalPages) { %>
+          <a class="<%= i === currentPage ? 'active' : '' %>" href="/main?p=<%= i %>&searchedCards=<%= searchedCards %>">
+            <%= i %>
+          </a>
+        <% } %>
+      <% } %>
+
+      <% if (currentPage < totalPages - 2) { %>
+        <span style="color: white;">...</span>
+      <% } %>
+
+      <% if (currentPage < totalPages) { %>
+        <a href="/main?p=<%= currentPage + 1 %>&searchedCards=<%= searchedCards %>">&rarr;</a>
+      <% } %>
+    </section>
+  </main>
+
+  <button id="goUpBtn" class="go-up-btn" onclick="scrollToTop()"> &#x2191; </button>
+
+  <script>
+    document.getElementById('info-toggle-btn').addEventListener('click', function() {
+      var infoText = document.querySelector('.text-info-decklist');
+      infoText.classList.toggle('active');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<%- include('./partials/header') %>
+
+
+<body>
+  <div class="custom-deck-container">
+    <button class="add-deck-btn" id="add-deck-btn">&#43;</button>
+    <div id="popup-container" class="hidden popup-box">
+      <button class="close-the-popup">&times;</button>
+      <div id="deck-image-container" class="image-grid"></div>
+      <input type="text" id="deck-name-input" placeholder="Voer een decknaam in" class="deckname-input hidden">
+      <button id="save-deck-btn" class="save-button hidden">Opslaan</button>
+    </div>
+  </div>
+
+  <div>
+    <div style="text-align: center; background-color: black; border: purple 4px solid;" class="text-info-decklist">
+      <p class="info-totaldeck">Druk op + de knop om een deck te creëren, selecteer vervolgens een achtergrond en kies een naam voor je deck.</p>
+      <p class="info-totaldeck">Daarna kan je kaarten toevoegen aan je gepersonaliseerde deck.</p>
+    </div>
+    <button class="info-toggle-btn" id="info-toggle-btn">&quest;</button>
+  </div>
+
+  <div id="display-deck-container">
+    <% decks.forEach((deck) => { %>
+      <div class="saved-deck-container">
+        <p class="info-totaldeck"><%= deck.totalCards %> / 60</p>
+        <div class="deck-image-container">
+          <a href="/deckdetail?id=<%= deck._id %>"><img class="deck-image-created" src="<%= deck.imageUrl %>" alt="<%= deck.name %>"></a>
+        </div>
+        <h2 class="deck-name">
+          <p style="padding: 0.4em; border-bottom: white solid 1px; font-size: large;"><%= deck.name %></p>
+          <div style="display: flex; justify-content: center; margin: 0.6em ; margin-top: 1em; gap: 1rem;">
+            <button class="update-deck-btn" data-id="<%= deck._id %>" data-name="<%= deck.name %>" data-image="<%= deck.imageUrl %>">&#9998;</button>
+            <form action="/deckdetail/delete" method="post" class="delete-deck-btn-decklist">
+              <input type="hidden" name="deckId" value="<%= deck._id %>">
+              <button type="submit"><i class="fa fa-trash-o"></i></button>
+            </form>
+          </div>
+        </h2>
+      </div>
+    <% }); %>
+  </div>
+
+  <div id="update-popup-container" class="hidden">
+    <div id="update-deck-image-container"></div>
+    <input type="text" id="update-deck-name-input" placeholder="Voer een nieuwe decknaam in" class="deckname-input">
+    <button id="update-save-deck-btn" class="save-button">Update Deck</button>
+    <button id="close-update-popup" class="close-button">X</button>
+  </div>
+
+  <script src="/js/decklist.js"></script>
+  <script>
+    document.getElementById('info-toggle-btn').addEventListener('click', function() {
+      var infoText = document.querySelector('.text-info-decklist');
+      infoText.classList.toggle('active');
+    });
+  </script>
+
+<%- include('./partials/footer') %>

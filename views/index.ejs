@@ -1,0 +1,73 @@
+<%- include('./partials/head') %>
+<div class="indexTitle">
+  <p>Maak uw keuze</p>
+</div>
+
+  <body class="landing_body">
+    <main class="landingpage_container">
+      <a class="block_landing mtg" href="/login">
+        <img src="/assets/images/mtg1.jpg" alt="Magic The Gathering" />
+        <p>Magic The Gathering</p>
+      </a>
+      <article class="block_landing fifa">
+        <a href="/fifa">
+          <img src="/assets/images/fifa1.jpg" alt="Fifa" />
+          <p>Fifa</p>
+        </a>
+      </article>
+      <article class="block_landing lego">
+        <a href="/lego">
+          <img src="/assets/images/legomaster1.jpg" alt="Lego" />
+          <p>Lego Master</p>
+        </a>
+      </article>
+      <article class="block_landing pokemon">
+        <a href="/pokemon">
+          <img src="/assets/images/pokemon1.jpg" alt="Pokemon" />
+          <p>Pokemon</p>
+        </a>
+      </article>
+      <article class="block_landing fortnite">
+        <a href="/fortnite">
+          <img src="/assets/images/fortnite1.jpg" alt="Fortnite" />
+          <p>Fortnite</p>
+        </a>
+      </article>
+      <article class="block_landing lotr">
+        <a href="/lotr">
+          <img src="/assets/images/lotr1.jpg" alt="Lord Of The Rings" />
+          <p>Lord Of The Rings</p>
+        </a>
+      </article>
+    </main>
+
+    <div id="noAccessPopup" class="no-access-popup">
+      <div class="no-access-popup-content">
+        <span class="no-access-popup-close">&times;</span>
+        <div id="popup-content">
+          <h2>Verbonden toegang</h2>
+          <p>Het spijt ons maar u heeft geen toegang tot dit project. Gelieve het juiste project te kiezen.</p>
+        </div>
+      </div>
+    </div>
+
+
+<script>
+
+  document.querySelectorAll('.block_landing a').forEach(function(el) {
+    el.addEventListener('click', function(event) {
+      event.preventDefault(); 
+      document.getElementById('noAccessPopup').style.display = 'block';
+    });
+  });
+
+  
+  document.querySelector('.no-access-popup-close').addEventListener('click', function() {
+    document.getElementById('noAccessPopup').style.display = 'none'; // Verberg de pop-up
+  });
+</script>
+
+
+
+    <%- include('./partials/footer') %>
+  </body>

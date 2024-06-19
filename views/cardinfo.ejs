@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <title>Card Details</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="cardinfo-main">
+  <div class="back-button-container">
+    <a href="<%= `/main?p=${p}&searchedCards=${searchedCards}` %>" class="back-button-cardinfo">Terug</a>
+  </div>
+  <div class="card-container">
+    <img class="card-image" src="<%= card.imageUrl %>" alt="<%= card.name %>" />
+    <div class="card-info">
+      <h1 class="card-name">
+        <%= card.name || '' %>
+      </h1>
+      <h2 class="card-rarity">
+        <%= card.rarity || '' %>
+      </h2>
+      <h3 class="card-type">
+        <%= card.type || '' %>
+      </h3>
+      <p class="card-text">
+        <%= card.text || '' %>
+      </p>
+      <p class="card-power-toughness">
+        <%= card.power + " power" || '' %> / <%= card.toughness + " mana cost" || '' %>
+      </p>
+      <div class="add-card-container">
+        <form id="add-card-form" action="/cardinfo/add-to-deck" method="post">
+          <input type="hidden" name="cardName" value="<%= card.name %>">
+          <label for="deck-select">kies deck:</label>
+          <select name="deckId" id="deck-select" class="deck-select">
+            <% decks.forEach(deck=> { %>
+              <option value="<%= deck._id %>" data-card-count="<%= deck.cardCount %>">
+                <%= deck.name %>
+              </option>
+            <% }); %>
+          </select>
+          <button type="submit" id="add-card-btn" class="add-card-btn">Toevoegen</button>
+        </form>
+        <p id="card-count" class="card-count"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const deckSelect = document.getElementById('deck-select');
+    const cardCountDisplay = document.getElementById('card-count');
+    const addCardButton = document.getElementById('add-card-btn');
+
+    function updateCardCount() {
+      const selectedOption = deckSelect.options[deckSelect.selectedIndex];
+      const cardCount = selectedOption.getAttribute('data-card-count');
+      cardCountDisplay.textContent = `deze kaart zit in de deck : ${cardCount} keer.`;
+      if (parseInt(cardCount) >= 4) {
+        addCardButton.disabled = true;
+        addCardButton.classList.add('disabled');
+      } else {
+        addCardButton.disabled = false;
+        addCardButton.classList.remove('disabled');
+      }
+    }
+
+    deckSelect.addEventListener('change', updateCardCount);
+    window.addEventListener('load', updateCardCount);
+
+ 
+    addCardButton.addEventListener('click', (event) => {
+      event.preventDefault(); 
+
+      
+      const confirmed = confirm('Bent u zeker dat u deze kaart wilt toevoegen?');
+      if (confirmed) {
+    
+        document.getElementById('add-card-form').submit();
+      }
+    });
+  </script>
+</body>
+</html>
+<%- include('./partials/footer') %>

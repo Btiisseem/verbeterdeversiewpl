@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('./head') %>
+<body>
+  <header>
+    <a href="/main"> 
+      <img id="logo" src="./assets/images/LogoMuskNite.png" alt="Logo" />
+    </a>
+    <nav id="navbar">
+      <ul>
+        <li class="<%= activePage === 'home' ? 'active' : '' %>"><a href="/main">Home</a></li>
+        <li class="<%= activePage === 'decklist' ? 'active' : '' %>"><a href="/decklist">Deck</a></li>
+        <li class="<%= activePage === 'draw' ? 'active' : '' %>"><a href="/overview">+Draw</a></li>
+        <form action="/logout" method="post" id="logoutForm" class="logout-form">
+          <button type="submit" id="logoutButton">UITLOGGEN</button>
+        </form>
+      </ul>
+     
+    </nav>
+    <button id="hamburger" aria-label="Open navigation menu" class="hamburger">&#9776;</button>
+    <nav id="nav-menu" class="nav-menu">
+      <ul>
+        <li><a href="/main">HOME</a></li>
+      </ul>
+      <ul>
+        <li><a href="/decklist">Deck</a></li>
+      </ul>
+      <ul>
+        <li><a href="/overview">Draw +</a></li>
+      </ul>
+      <form action="/logout" method="post" id="logoutFormMobile" class="logout-form">
+        <button type="submit" id="logoutButtonMobile">UITLOGGEN</button>
+      </form>
+    </nav>
+  </header>
+</body>
+</html>

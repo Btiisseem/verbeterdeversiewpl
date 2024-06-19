@@ -1,0 +1,202 @@
+<%- include('./partials/header') %>
+
+  <main>
+    <section class="draw-select-options">
+      <form id="deck-select-form">
+        <select name="deckId" id="deck-select">
+          <option value="">Kies deck</option>
+          <% decks.forEach(deck=> { %>
+            <option value="<%= deck._id %>" data-image="<%= deck.imageUrl %>" data-total="<%= deck.totalCards %>"
+              data-remaining="<%= deck.totalCards %>">
+              <%= deck.name %>
+            </option>
+            <% }); %>
+        </select>
+      </form>
+      <% if (decks.length===0) { %>
+        <p>Er zijn geen decks; creëer een deck <a href="/decklist">hier</a>.</p>
+        <% } %>
+    </section>
+
+    <section class="draw-cards-decks">
+      <article class="image-deck">
+        <h2 class="drawn-deck-info" id="remaining-cards-info">0 / 60</h2>
+        <img id="deck-image" src="./assets/images/mtgkaartachterkant.jpg" alt="Deck image" />
+      </article>
+      <article class="image-deck drawn-card">
+        <h2 class="drawn-deck-info">Getrokken Kaarten</h2>
+        <img id="drawn-card-image" src="" alt="Drawn card image" />
+      </article>
+    </section>
+
+    <section class="draw-interaction-btn">
+      <button id="shuffle-btn" disabled class="disabled">Schudden</button>
+      <button id="draw-card-btn" disabled class="disabled">Kaart Nemen</button>
+      <button id="reset-btn" disabled class="disabled">Reset</button>
+    </section>
+
+    <section class="drawn-summary">
+      <h2 class="drawn-cards-info">Reeds getrokken kaarten</h2>
+      <hr />
+      <ul class="draw-cards-summary" id="drawn-cards-list">
+     
+      </ul>
+    </section>
+
+  
+  </main>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+  const deckSelect = document.getElementById('deck-select');
+  const remainingCardsInfo = document.getElementById('remaining-cards-info');
+  const deckImage = document.getElementById('deck-image');
+  const drawnCardImage = document.getElementById('drawn-card-image');
+  const drawnCardsList = document.getElementById('drawn-cards-list');
+  const shuffleBtn = document.getElementById('shuffle-btn');
+  const drawCardBtn = document.getElementById('draw-card-btn');
+  const resetBtn = document.getElementById('reset-btn');
+  const errorMessage = document.getElementById('error-message');
+  let selectedDeck = null;
+  let drawnCards = [];
+
+  deckSelect.addEventListener('change', async () => {
+    const selectedOption = deckSelect.options[deckSelect.selectedIndex];
+    const deckId = selectedOption.value;
+    const deckImageSrc = selectedOption.getAttribute('data-image');
+    const totalCards = selectedOption.getAttribute('data-total');
+    const remainingCards = selectedOption.getAttribute('data-remaining');
+
+    // Clear drawn cards when selecting a new deck
+    drawnCards = [];
+    updateDrawnCards();
+
+    if (deckId) {
+      const response = await fetch('/copy-deck', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deckId })
+      });
+      const copiedDeck = await response.json();
+
+      selectedDeck = copiedDeck._id;
+      deckImage.src = deckImageSrc;
+      remainingCardsInfo.textContent = `${remainingCards} / ${totalCards}`;
+      shuffleBtn.disabled = false;
+      shuffleBtn.classList.remove('disabled');
+      drawCardBtn.disabled = remainingCards === "0";
+      drawCardBtn.classList.toggle('disabled', remainingCards === "0");
+      resetBtn.disabled = false;
+      resetBtn.classList.remove('disabled');
+    } else {
+      selectedDeck = null;
+      deckImage.src = './assets/images/mtgkaartachterkant.jpg';
+      remainingCardsInfo.textContent = "0 / 60";
+      shuffleBtn.disabled = true;
+      shuffleBtn.classList.add('disabled');
+      drawCardBtn.disabled = true;
+      drawCardBtn.classList.add('disabled');
+      resetBtn.disabled = true;
+      resetBtn.classList.add('disabled');
+    }
+  });
+
+  shuffleBtn.addEventListener('click', async () => {
+    if (selectedDeck) {
+      deckImage.classList.add('shuffle-animation');
+      setTimeout(() => deckImage.classList.remove('shuffle-animation'), 1000);
+
+      const response = await fetch('/shuffle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deckId: selectedDeck })
+      });
+      if (response.ok) {
+        // Handle successful shuffle
+      }
+    }
+  });
+
+  drawCardBtn.addEventListener('click', async () => {
+    if (selectedDeck) {
+      const response = await fetch('/draw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deckId: selectedDeck })
+      });
+      const data = await response.json();
+      if (data.error) {
+        errorMessage.innerText = data.error;
+        drawCardBtn.disabled = true;
+        drawCardBtn.classList.add('disabled');
+      } else {
+        drawnCards.push(data.card);
+        updateDeckInfo(data);
+        updateDrawnCards();
+      }
+    }
+  });
+
+  resetBtn.addEventListener('click', async () => {
+    const selectedOption = deckSelect.options[deckSelect.selectedIndex];
+    const deckId = selectedOption.value;
+    const deckImageSrc = selectedOption.getAttribute('data-image');
+    const totalCards = selectedOption.getAttribute('data-total');
+    const remainingCards = selectedOption.getAttribute('data-remaining');
+
+    if (deckId) {
+      const response = await fetch('/copy-deck', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deckId })
+      });
+      const copiedDeck = await response.json();
+
+      selectedDeck = copiedDeck._id;
+      deckImage.src = deckImageSrc;
+      remainingCardsInfo.textContent = `${remainingCards} / ${totalCards}`;
+      shuffleBtn.disabled = false;
+      shuffleBtn.classList.remove('disabled');
+      drawCardBtn.disabled = remainingCards === "0";
+      drawCardBtn.classList.toggle('disabled', remainingCards === "0");
+      resetBtn.disabled = false;
+      resetBtn.classList.remove('disabled');
+
+      // Clear drawn cards
+      drawnCards = [];
+      updateDrawnCards();
+    } else {
+      selectedDeck = null;
+      deckImage.src = './assets/images/mtgkaartachterkant.jpg';
+      remainingCardsInfo.textContent = "0 / 60";
+      shuffleBtn.disabled = true;
+      shuffleBtn.classList.add('disabled');
+      drawCardBtn.disabled = true;
+      drawCardBtn.classList.add('disabled');
+      resetBtn.disabled = true;
+      resetBtn.classList.add('disabled');
+
+      // Clear drawn cards
+      drawnCards = [];
+      updateDrawnCards();
+    }
+  });
+
+  function updateDeckInfo(data) {
+    remainingCardsInfo.textContent = `${data.remainingCards} / ${data.totalCards}`;
+  }
+
+  function updateDrawnCards() {
+    drawnCardImage.src = drawnCards.length > 0 ? drawnCards[drawnCards.length - 1].imageUrl : '';
+    drawnCardsList.innerHTML = '';
+    drawnCards.forEach(card => {
+      const li = document.createElement('li');
+      const img = document.createElement('img');
+      img.src = card.imageUrl;
+      img.alt = card.name;
+      li.appendChild(img);
+      drawnCardsList.appendChild(li);
+    });
+  }
+});
+
+  </script>
